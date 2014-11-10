@@ -7,14 +7,21 @@ tcp_ser.c: the source file of the server in tcp transmission
 
 #define BACKLOG 10
 
+int errorRate = 0;
 void str_ser(int sockfd);                                                        // transmitting and receiving function
 
-int main(void)
+int main(int argc, char **argv)
 {
 	int sockfd, con_fd, ret;
 	struct sockaddr_in my_addr;
 	struct sockaddr_in their_addr;
 	int sin_size;
+
+	if (argc != 2) {
+		printf("parameters not match");
+	}
+
+	errorRate = atoi(argv[1]);
 
 //	char *buf;
 	pid_t pid;
@@ -140,16 +147,16 @@ void str_ser(int sockfd)
 		int prevAckLen = ack.len;
 		if(end != 1)
 		{
-			if(r <= ERROR_RATE)
+			if(r <= errorRate)
 			{
-				printf("error!\n");
+				//printf("error!\n");
 				ack.len = 255;
 			}
 		}
 
 		if ((n = send(sockfd, &ack, sizeof(ack), 0))==-1)
 		{
-				printf("ser: send error!");								//send the ack
+				//printf("ser: send error!");								//send the ack
 				exit(1);
 		}
 		ack.len = prevAckLen;
